@@ -35,6 +35,8 @@ func operacao (a, b float64, op string) (float64, error) {
 			return 0, err
 		}
 		return resultado, nil
+	case "sair":
+		return 0, fmt.Errorf("Saindo do programa")
 	default:
 		return 0, fmt.Errorf("Operação inválida")
 	}
@@ -44,16 +46,23 @@ func main() {
 
 	var a, b float64
 	var op string
-	fmt.Println("Digite a operação desejada (+)(-)(*)(/): ")
-	fmt.Scanln(&op)
-	fmt.Println("Digite o primeiro número: ")
-	fmt.Scanln(&a)
-	fmt.Println("Digite o segundo número: ")
-	fmt.Scanln(&b)
-	resultado, err := operacao(a, b, op)
-	if err != nil {
-		fmt.Println("Erro", err)
-	} else {
-		fmt.Println("Resultado:", resultado)
+	for {
+		fmt.Println("Digite a operação desejada (+)(-)(*)(/) ou 'sair' para encerrar a calculadora: ")
+		fmt.Scanln(&op)
+		if op == "sair" {
+			fmt.Println("Saindo da calculadora")
+			break
+		} else {
+		fmt.Println("Digite o primeiro número: ")
+		fmt.Scanln(&a)
+		fmt.Println("Digite o segundo número: ")
+		fmt.Scanln(&b)
+		resultado, err := operacao(a, b, op)
+		if err != nil {
+			fmt.Println("Erro", err)
+		} else {
+			fmt.Println(a, op, b, "=", resultado)
+			}
+		}
 	}
 }
