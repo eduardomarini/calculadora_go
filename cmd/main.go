@@ -1,9 +1,9 @@
 package main
 
 import (
-	"bufio"
+	"bufio" // para leitura bufferizada
 	"fmt"
-	"os"
+	"os" // para manipulação do sistema operacional
 	"strings"
 )
 
@@ -47,45 +47,63 @@ func operacao(a, b float64, op string) (float64, error) {
 	}
 }
 
+func lerEntrada(prompt string) (string, error) {
+	reader := bufio.NewReader(os.Stdin)     // cria um novo leitor de entrada, que lê a partir do terminal (os.Stdin)
+	fmt.Print(prompt)                       // exibe o prompt para o usuário
+	entrada, err := reader.ReadString('\n') // lê a entrada do usuário até que ele pressione a tecla Enter
+	if err != nil {
+		return "", err
+	}
+	return strings.TrimSpace(entrada), nil // remove qualquer espaço em branco (icluindo nova linha) do inicio ao fim da string
+}
+
 func main() {
 
 	var a, b float64
 	var op string
 	var err error
-	reader := bufio.NewReader(os.Stdin)
+	var historico []string
+	var resultadoStr string
 
 	for {
-		fmt.Println("Digite a operação desejada (+)(-)(*)(/) ou 's' para encerrar a calculadora: ")
-		op, _ = reader.ReadString('\n')
-		op = strings.TrimSpace(op)
-		if op != "+" && op != "-" && op != "*" && op != "/" && op != "sair" {
+		op, err = lerEntrada("Digite a operação (+, -, *, /) ou 'sair' para encerrar calculadora: ")
+		if err != nil {
+			fmt.Println("Erro na leitura da entrada", err)
+		}
+		if op != "+" && op != "-" && op != "*" && op != "/" && op != "s" {
 			fmt.Println("Operação inválida.")
 			continue
+		}
 
-		} else if op == "s" {
+		if op == "s" {
 			fmt.Println("Saindo da calculadora")
 			break
-		} else {
-			fmt.Println("Digite o primeiro número: ")
-			_, err = fmt.Scanf("%f", &a)
-			if err != nil {
-				fmt.Println("Entrada inválida. Tente novamente.")
-				reader.ReadString('\n') // limpar o buffer de entrada
-				continue
-			}
-			fmt.Println("Digite o segundo número: ")
-			_, err = fmt.Scanf("%f", &b)
-			if err != nil {
-				fmt.Println("Entrada inválida. Tente novamente.")
-				reader.ReadString('\n') // limpar o buffer de entrada
-				continue
-			}
-			resultado, err := operacao(a, b, op)
-			if err != nil {
-				fmt.Println("Erro", err)
-			} else {
-				fmt.Println(a, op, b, "=", resultado)
-			}
 		}
+
+		fmt.Println("Digite o primeiro número: ")
+		_, err = fmt.Scanf("%f", &a)
+		if err != nil {
+			fmt.Println("Entrada inválida. Tente novamente.")
+			continue
+		}
+
+		fmt.Println("Digite o segundo número: ")
+		_, err = fmt.Scanf("%f", &b)
+		if err != nil {
+			fmt.Println("Entrada inválida. Tente novamente.")
+			continue
+		}
+		resultado, err := operacao(a, b, op)
+		if err != nil {
+			fmt.Println("Erro", err)
+		} else {
+			resultadoStr = fmt.Sprintf("%f %s %f = %f", a, op, b, resultado)
+			historico = append(historico, resultadoStr)
+			fmt.Println(resultadoStr)
+		}
+	}
+	fmt.Println("Histórico de Operações:")
+	for _, h := range historico {
+		fmt.Println(h)
 	}
 }
