@@ -57,6 +57,26 @@ func lerEntrada(prompt string) (string, error) {
 	return strings.TrimSpace(entrada), nil // remove qualquer espaço em branco (icluindo nova linha) do inicio ao fim da string
 }
 
+func tratamentoSaida(a, b, resultado float64, op string) string {
+	if a == float64(int64(a)) && b == float64(int64(b)) && resultado == float64(int64(resultado)) { // a,b e resultado são inteiros
+		return fmt.Sprintf("%d %s %d = %d", int64(a), op, int64(b), int64(resultado))
+	} else if a == float64(int64(a)) && b == float64(int64(b)) { // a e b são inteiros
+		return fmt.Sprintf("%d %s %d = %f", int64(a), op, int64(b), resultado)
+	} else if a == float64(int64(a)) && resultado == float64(int64(resultado)) { // a e resultado são inteiros
+		return fmt.Sprintf("%d %s %f = %d", int64(a), op, b, int64(resultado))
+	} else if b == float64(int64(b)) && resultado == float64(int64(resultado)) { // b e resultado são inteiros
+		return fmt.Sprintf("%f %s %d = %d", a, op, int64(b), int64(resultado))
+	} else if a == float64(int64(a)) { // somente a é inteiro
+		return fmt.Sprintf("%d %s %f = %f", int64(a), op, b, resultado)
+	} else if b == float64(int64(b)) { // somente b é inteiro
+		return fmt.Sprintf("%f %s %d = %f", a, op, int64(b), resultado)
+	} else if resultado == float64(int64(resultado)) { // somente resultado é inteiro
+		return fmt.Sprintf("%f %s %f = %d", a, op, b, int64(resultado))
+	}
+
+	return fmt.Sprintf("%f %s %f = %f", a, op, b, resultado)
+}
+
 func main() {
 
 	var a, b float64
@@ -97,7 +117,7 @@ func main() {
 		if err != nil {
 			fmt.Println("Erro", err)
 		} else {
-			resultadoStr = fmt.Sprintf("%f %s %f = %f", a, op, b, resultado)
+			resultadoStr = tratamentoSaida(a, b, resultado, op)
 			historico = append(historico, resultadoStr)
 			fmt.Println(resultadoStr)
 		}
