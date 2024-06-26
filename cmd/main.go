@@ -1,17 +1,22 @@
 package main
 
-import "fmt"
+import (
+	"bufio"
+	"fmt"
+	"os"
+	"strings"
+)
 
 func soma(a, b float64) float64 {
-	return a + b;
+	return a + b
 }
 
 func subtracao(a, b float64) float64 {
-	return a - b;
+	return a - b
 }
 
 func multiplicacao(a, b float64) float64 {
-	return a * b;
+	return a * b
 }
 
 func divisao(a, b float64) (float64, error) {
@@ -21,7 +26,7 @@ func divisao(a, b float64) (float64, error) {
 	return a / b, nil
 }
 
-func operacao (a, b float64, op string) (float64, error) {
+func operacao(a, b float64, op string) (float64, error) {
 	switch op {
 	case "+":
 		return soma(a, b), nil
@@ -46,22 +51,40 @@ func main() {
 
 	var a, b float64
 	var op string
+	var err error
+	reader := bufio.NewReader(os.Stdin)
+
 	for {
-		fmt.Println("Digite a operação desejada (+)(-)(*)(/) ou 'sair' para encerrar a calculadora: ")
-		fmt.Scanln(&op)
-		if op == "sair" {
+		fmt.Println("Digite a operação desejada (+)(-)(*)(/) ou 's' para encerrar a calculadora: ")
+		op, _ = reader.ReadString('\n')
+		op = strings.TrimSpace(op)
+		if op != "+" && op != "-" && op != "*" && op != "/" && op != "sair" {
+			fmt.Println("Operação inválida.")
+			continue
+
+		} else if op == "s" {
 			fmt.Println("Saindo da calculadora")
 			break
 		} else {
-		fmt.Println("Digite o primeiro número: ")
-		fmt.Scanln(&a)
-		fmt.Println("Digite o segundo número: ")
-		fmt.Scanln(&b)
-		resultado, err := operacao(a, b, op)
-		if err != nil {
-			fmt.Println("Erro", err)
-		} else {
-			fmt.Println(a, op, b, "=", resultado)
+			fmt.Println("Digite o primeiro número: ")
+			_, err = fmt.Scanf("%f", &a)
+			if err != nil {
+				fmt.Println("Entrada inválida. Tente novamente.")
+				reader.ReadString('\n') // limpar o buffer de entrada
+				continue
+			}
+			fmt.Println("Digite o segundo número: ")
+			_, err = fmt.Scanf("%f", &b)
+			if err != nil {
+				fmt.Println("Entrada inválida. Tente novamente.")
+				reader.ReadString('\n') // limpar o buffer de entrada
+				continue
+			}
+			resultado, err := operacao(a, b, op)
+			if err != nil {
+				fmt.Println("Erro", err)
+			} else {
+				fmt.Println(a, op, b, "=", resultado)
 			}
 		}
 	}
